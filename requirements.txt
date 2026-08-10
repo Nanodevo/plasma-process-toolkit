@@ -1,0 +1,7 @@
+# Streamlit Community Cloud deployment (app.py). The plasmafab package
+# itself lives in this repo and is imported from the repo root.
+streamlit>=1.36
+numpy>=1.26
+pandas>=2.1
+plotly>=5.20
+statsmodels>=0.14
