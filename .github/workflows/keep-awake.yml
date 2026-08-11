@@ -1,0 +1,27 @@
+# Keeps the hosted dashboard (plasmafab.streamlit.app) from going to sleep.
+# Community Cloud suspends apps that receive no traffic for a while; one
+# real request per hour is enough to stay warm. The cookie jar + browser
+# user agent matter: without them, Streamlit's edge bounces the request to
+# an auth redirect that never reaches the app and would not count.
+#
+# Note: GitHub disables cron workflows in repos with no activity for 60
+# days - a commit or a manual run re-enables it.
+name: Keep dashboard awake
+
+on:
+  schedule:
+    - cron: "17 * * * *"        # hourly at :17
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the app through the auth handshake
+        run: |
+          code=$(curl -sS -L -c cj.txt -b cj.txt -o /dev/null \
+            -w "%{http_code}" --max-time 90 \
+            -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" \
+            "https://plasmafab.streamlit.app/")
+          echo "app responded: HTTP $code"
+          test "$code" = "200"
