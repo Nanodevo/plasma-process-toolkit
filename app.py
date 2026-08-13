@@ -26,15 +26,14 @@ st.caption("PECVD / RIE / sputter tool models + DOE + SPC + run-to-run "
            "plasma process & equipment engineering. "
            "Source: github.com/Nanodevo")
 
-_NB = ("https://github.com/Nanodevo/plasma-process-toolkit/blob/main/"
-       "notebooks/")
+_RP = "https://nanodevo.github.io/plasmafab-reports/"
 st.markdown(
-    "**Worked case studies in the repo:** "
-    f"[8D report]({_NB}eight_d_report.py) · "
-    f"[Six Sigma DMAIC]({_NB}dmaic_capability_study.py) · "
-    f"[PFMEA with measured detection]({_NB}pfmea_pecvd.py) · "
-    f"[tool matching & qualification]({_NB}tool_matching_qual.py) · "
-    f"[root cause walkthrough]({_NB}root_cause_bad_pm.py)")
+    "**Worked case studies** (rendered reports, source in the repo): "
+    f"[8D report]({_RP}eight_d_report.html) · "
+    f"[Six Sigma DMAIC]({_RP}dmaic_capability_study.html) · "
+    f"[PFMEA with measured detection]({_RP}pfmea_pecvd.html) · "
+    f"[tool matching & qualification]({_RP}tool_matching_qual.html) · "
+    f"[root cause walkthrough]({_RP}root_cause_bad_pm.html)")
 
 TOOLS = {"PECVD (a-Si:H deposition)": "pecvd", "RIE (SF6 etch)": "rie",
          "Sputter (TCO: AZO)": "sputter"}
