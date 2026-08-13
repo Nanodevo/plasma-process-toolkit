@@ -26,6 +26,16 @@ st.caption("PECVD / RIE / sputter tool models + DOE + SPC + run-to-run "
            "plasma process & equipment engineering. "
            "Source: github.com/Nanodevo")
 
+_NB = ("https://github.com/Nanodevo/plasma-process-toolkit/blob/main/"
+       "notebooks/")
+st.markdown(
+    "**Worked case studies in the repo:** "
+    f"[8D report]({_NB}eight_d_report.py) · "
+    f"[Six Sigma DMAIC]({_NB}dmaic_capability_study.py) · "
+    f"[PFMEA with measured detection]({_NB}pfmea_pecvd.py) · "
+    f"[tool matching & qualification]({_NB}tool_matching_qual.py) · "
+    f"[root cause walkthrough]({_NB}root_cause_bad_pm.py)")
+
 TOOLS = {"PECVD (a-Si:H deposition)": "pecvd", "RIE (SF6 etch)": "rie",
          "Sputter (TCO: AZO)": "sputter"}
 RESPONSES = {"pecvd": ["dep_rate_nm_min", "nonuniformity_pct",

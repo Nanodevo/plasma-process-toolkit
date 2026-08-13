@@ -1,8 +1,12 @@
 # Keeps the hosted dashboard (plasmafab.streamlit.app) from going to sleep.
-# Community Cloud suspends apps that receive no traffic for a while; one
-# real request per hour is enough to stay warm. The cookie jar + browser
-# user agent matter: without them, Streamlit's edge bounces the request to
-# an auth redirect that never reaches the app and would not count.
+#
+# Lesson learned 2026-08-13: a curl ping is a placebo. Streamlit's edge
+# returns HTTP 200 even for the "app has gone to sleep" page, and a bare
+# GET never opens the WebSocket session that Community Cloud counts as
+# viewer traffic - so the old ping was green every hour while the app
+# slept anyway. This version drives a real headless browser: it loads
+# the page, clicks the wake-up button if the sleep page is showing, and
+# holds the session open long enough to register as a visit.
 #
 # Note: GitHub disables cron workflows in repos with no activity for 60
 # days - a commit or a manual run re-enables it.
@@ -10,18 +14,44 @@ name: Keep dashboard awake
 
 on:
   schedule:
-    - cron: "17 * * * *"        # hourly at :17
+    - cron: "17 */3 * * *"      # every 3 hours at :17 (sleep threshold is ~12h)
   workflow_dispatch:
 
 jobs:
-  ping:
+  visit:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: Ping the app through the auth handshake
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Playwright
         run: |
-          code=$(curl -sS -L -c cj.txt -b cj.txt -o /dev/null \
-            -w "%{http_code}" --max-time 90 \
-            -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" \
-            "https://plasmafab.streamlit.app/")
-          echo "app responded: HTTP $code"
-          test "$code" = "200"
+          pip install --quiet playwright
+          playwright install --with-deps chromium
+      - name: Open a real session (and wake the app if needed)
+        run: |
+          python - <<'EOF'
+          from playwright.sync_api import sync_playwright
+
+          URL = "https://plasmafab.streamlit.app/"
+          with sync_playwright() as p:
+              browser = p.chromium.launch()
+              page = browser.new_page()
+              page.goto(URL, wait_until="load", timeout=120_000)
+              page.wait_for_timeout(8_000)
+              body = page.inner_text("body").lower()
+              if "gone to sleep" in body or "back up" in body:
+                  print("app was ASLEEP - clicking the wake button")
+                  page.get_by_role("button").filter(
+                      has_text="back up").first.click()
+                  page.wait_for_timeout(60_000)
+              else:
+                  # Hold the WebSocket open so the visit counts.
+                  page.wait_for_timeout(25_000)
+              body = page.inner_text("body").lower()
+              ok = ("plasmafab" in body) and ("gone to sleep" not in body)
+              print("final state:", "AWAKE" if ok else "STILL ASLEEP")
+              browser.close()
+              raise SystemExit(0 if ok else 1)
+          EOF
