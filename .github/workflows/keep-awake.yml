@@ -35,21 +35,39 @@ jobs:
           from playwright.sync_api import sync_playwright
 
           URL = "https://plasmafab.streamlit.app/"
+
+          def all_text(page) -> str:
+              # Community Cloud renders the app inside an iframe; the main
+              # frame's body is empty. Collect text from every frame.
+              parts = []
+              for f in page.frames:
+                  try:
+                      parts.append(f.inner_text("body", timeout=5_000))
+                  except Exception:
+                      pass
+              return " ".join(parts).lower()
+
           with sync_playwright() as p:
               browser = p.chromium.launch()
               page = browser.new_page()
               page.goto(URL, wait_until="load", timeout=120_000)
-              page.wait_for_timeout(8_000)
-              body = page.inner_text("body").lower()
+              page.wait_for_timeout(10_000)
+              body = all_text(page)
               if "gone to sleep" in body or "back up" in body:
                   print("app was ASLEEP - clicking the wake button")
-                  page.get_by_role("button").filter(
-                      has_text="back up").first.click()
+                  for f in page.frames:
+                      try:
+                          btn = f.get_by_role("button").filter(
+                              has_text="back up").first
+                          btn.click(timeout=5_000)
+                          break
+                      except Exception:
+                          continue
                   page.wait_for_timeout(60_000)
               else:
                   # Hold the WebSocket open so the visit counts.
                   page.wait_for_timeout(25_000)
-              body = page.inner_text("body").lower()
+              body = all_text(page)
               ok = ("plasmafab" in body) and ("gone to sleep" not in body)
               print("final state:", "AWAKE" if ok else "STILL ASLEEP")
               browser.close()
