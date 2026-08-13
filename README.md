@@ -26,10 +26,12 @@ capability**, a **root-cause walkthrough**, and a **cluster-tool demo**
 | `plasmafab/spc.py` | I-MR, X-bar/R and EWMA control charts, frozen-baseline limits, **Western Electric rules**, Cp/Cpk |
 | `plasmafab/apc.py` | **EWMA run-to-run controller** (Ingolfsson–Sachs form) with deadband and qualified-window clamping; controller gain taken from the DOE response surface |
 | `plasmafab/simulate.py` | Production histories with injectable faults (an imperfect PM, an MFC calibration step) and a full TCO / p-i-n / TCO **stack builder** in cluster-tool or air-break mode |
+| `plasmafab/fmea.py` | **PFMEA** scaffolding (S/O/D, RPN) with *measured* detection: inject a failure mode, count runs-to-alarm, score D from the experiment |
 | `app.py` | Streamlit dashboard: live SPC with event injection, DOE window explorer, capability tab |
 | `notebooks/root_cause_bad_pm.py` | Excursion investigation, chart → signature → physics → corrective procedure |
 | `notebooks/eight_d_report.py` | The same incident written up as a formal **8D report** (D1–D8): containment, root cause, verified fix, recurrence prevention |
 | `notebooks/dmaic_capability_study.py` | **Six Sigma DMAIC** case study: a stable-but-not-capable film spec taken from Cpk 0.65 to >3 via CCD response surfaces and a process-window move, closed with a control plan |
+| `notebooks/pfmea_pecvd.py` | Worked **process FMEA** for the PECVD step: detection ratings backed by injected-failure experiments, top risks actioned and re-scored |
 
 ![RIE process window](docs/process_window.png)
 
@@ -42,6 +44,7 @@ python examples/run_apc.py                    # run-to-run control, open vs clos
 python notebooks/root_cause_bad_pm.py         # root-cause walkthrough (or run cells in VS Code)
 python notebooks/eight_d_report.py            # the incident as a formal 8D report
 python notebooks/dmaic_capability_study.py    # Six Sigma DMAIC capability project
+python notebooks/pfmea_pecvd.py               # PFMEA with measured detection ratings
 streamlit run app.py                          # dashboard
 ```
 
