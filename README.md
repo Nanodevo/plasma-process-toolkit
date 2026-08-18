@@ -32,6 +32,7 @@ capability**, a **root-cause walkthrough**, and a **cluster-tool demo**
 | `notebooks/eight_d_report.py` | The same incident written up as a formal **8D report** (D1–D8): containment, root cause, verified fix, recurrence prevention |
 | `notebooks/dmaic_capability_study.py` | **Six Sigma DMAIC** case study: a stable-but-not-capable film spec taken from Cpk 0.65 to >3 via CCD response surfaces and a process-window move, closed with a control plan |
 | `notebooks/pfmea_pecvd.py` | Worked **process FMEA** for the PECVD step: detection ratings backed by injected-failure experiments, top risks actioned and re-scored |
+| `notebooks/optical_coupling_tolerances.py` | **Optical connector tolerancing**: Gaussian-mode coupling loss (Marcuse), Monte Carlo tolerance stack-up vs an insertion-loss budget, assembly yield expressed as Cpk |
 | `notebooks/tool_matching_qual.py` | **Tool qualification & chamber matching**: OQ/PQ-style release with TOST equivalence testing - holds a mis-calibrated chamber, releases it after the fix into fleet SPC |
 
 ![RIE process window](docs/process_window.png)
@@ -46,6 +47,7 @@ python notebooks/root_cause_bad_pm.py         # root-cause walkthrough (or run c
 python notebooks/eight_d_report.py            # the incident as a formal 8D report
 python notebooks/dmaic_capability_study.py    # Six Sigma DMAIC capability project
 python notebooks/pfmea_pecvd.py               # PFMEA with measured detection ratings
+python notebooks/optical_coupling_tolerances.py  # connector tolerancing: coupling loss -> Monte Carlo -> Cpk
 python notebooks/tool_matching_qual.py        # chamber matching + qualification release
 streamlit run app.py                          # dashboard
 ```
