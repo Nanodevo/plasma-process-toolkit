@@ -33,8 +33,7 @@ st.markdown(
     f"[Six Sigma DMAIC]({_RP}dmaic_capability_study.html) · "
     f"[PFMEA with measured detection]({_RP}pfmea_pecvd.html) · "
     f"[tool matching & qualification]({_RP}tool_matching_qual.html) · "
-    f"[root cause walkthrough]({_RP}root_cause_bad_pm.html) · "
-    f"[optical coupling tolerancing]({_RP}optical_coupling_tolerances.html)")
+    f"[root cause walkthrough]({_RP}root_cause_bad_pm.html)")
 
 TOOLS = {"PECVD (a-Si:H deposition)": "pecvd", "RIE (SF6 etch)": "rie",
          "Sputter (TCO: AZO)": "sputter"}

@@ -145,6 +145,46 @@ print(f"lateral sigma 0.5 um -> yield {float((il2 <= USL).mean()):.1%}, "
       f"Cpk {cap2['cpk']:.2f}")
 
 # %% [markdown]
+# ## 4 - Fiber arrays: when eight channels must all pass
+#
+# Co-packaged optics connects fibers in ribbons: a fiber array unit
+# (FAU) with, say, 8 fibers at 127 um pitch mates against a photonic
+# chip's coupler row. Two things change versus a single connection:
+# the assembly passes only if **every** channel meets the budget, and a
+# tiny roll of the whole array about the optical axis turns into a
+# channel-dependent lateral offset, amplified by the distance from the
+# array center - the outermost fibers pay for the rotation.
+
+# %%
+N_CH, PITCH = 8, 127.0                       # channels, um pitch
+y_ch = (np.arange(N_CH) - (N_CH - 1) / 2) * PITCH
+
+roll = rng.normal(0, np.deg2rad(0.10), N)    # array roll, sigma 0.10 deg
+dx_a = rng.normal(0, 0.5, N); dy_a = rng.normal(0, 0.5, N)
+tilt_a = np.abs(rng.normal(0, 0.3, N))
+gap_a = rng.uniform(0, 8, N)
+
+il_ch = np.empty((N, N_CH))
+for i, y in enumerate(y_ch):
+    d_i = np.hypot(dx_a - y * roll, dy_a)    # roll shifts each channel
+    il_ch[:, i] = il_db(eta_lateral(d_i) * eta_angular(tilt_a)
+                        * eta_gap(gap_a))
+il_worst = il_ch.max(axis=1)
+
+print(f"per-channel yield (center): {(il_ch[:, 3] <= USL).mean():.1%}")
+print(f"per-channel yield (edge)  : {(il_ch[:, 0] <= USL).mean():.1%}")
+print(f"ARRAY yield (all 8 pass)  : {(il_worst <= USL).mean():.1%}")
+print(f"edge-channel extra loss from a 0.10 deg roll at "
+      f"{y_ch[0]:.0f} um: ~{il_db(eta_lateral(abs(y_ch[0]) * np.deg2rad(0.10))):.3f} dB")
+
+# %% [markdown]
+# The array multiplies the stakes: channels that would each pass alone
+# fail together often enough that array yield sits well below any
+# single-channel yield, and the roll tolerance, irrelevant for one
+# fiber, becomes a first-class budget item at the array edge. This is
+# the quiet reason fiber-to-chip connectivity is a precision-mechanics
+# problem as much as an optical one.
+#
 # ## Takeaway
 #
 # The loop closes the way connector engineering actually runs: physics
